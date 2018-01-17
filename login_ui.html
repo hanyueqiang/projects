@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>邮箱登录联想</title>
+	<link href="./public/jquery-ui.min.css" rel="stylesheet">
+	<style>
+	   .ui-autocomplete {
+        background: none repeat scroll 0 0 #fff;
+        border-color: -moz-use-text-color #ccc #ccc;
+        padding: 5px 0px 5px 10px;
+        margin:0px;
+        z-index: 999;
+        max-height: 200px;
+        overflow-y: auto;
+        /* 防止水平滚动条 */
+        overflow-x: hidden;
+      }
+      .ui-autocomplete li{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        list-style: none;
+        color:#666;
+        line-height: 1.5em;
+        cursor:pointer;
+      }
+      .ui-state-active{
+        background-color:#22c6d7;
+        border-radius: 4px;
+      }
+      .inputs {
+      	width:260px;
+      	height:28px;
+      	margin:100px auto;
+      }
+      #username {
+      	height:18px;
+      	width:200px;
+      }
+	</style>
+</head>
+<body>
+	<div class="inputs">
+		<span class="mails">邮箱:</span>
+	    <input class="required"
+	           id="username"
+	           size="25"
+	           tabindex="1"
+	           type="text"
+	           placeholder="请输入用户名"
+	           accesskey="n"
+	           onfocus="placeholder = ''"
+	           autocomplete="off" name="username" value=""/>
+	</div>
+	
+	<script src="./public/jquery.js"></script>
+	<script src="./public/jquery-ui.min.js"></script>
+	<script>
+		var mail_List = [
+			'yahoo.com',
+			'msn.com',
+			'hotmail.com',
+			'aol.com',
+			'ask.com',
+			'live.com',
+			'qq.com',
+			'0355.net',
+			'163.com',
+			'163.net',
+			'263.net',
+			'3721.net',
+			'yeah.net',
+			'googlemail.com',
+			'mail.com'
+		];
+		var usernametip = "\u8BF7\u8F93\u5165\u7528\u6237\u540D";
+		$("#username").blur(function(){
+    		$("#username").attr("placeholder", usernametip);
+    	});
+
+		// depend on jquery/jquery-ui.js(necessary)
+	    $("#username").autocomplete({ 
+	    	width:200,
+	        delay: 10, 
+	        autoFocus: true, //设置为true 时，第一个项目会自动被选定。
+	        open: function() {
+	          $('.ui-autocomplete').css('width','200px');
+	        },
+	        source: function (request, response) {  
+	            var hosts = mail_List;//邮箱域名集合  
+	            var term = request.term; //获取用户输入的内容；  
+	            var name = term;  //邮箱的用户名  
+	            var host = "";   //邮箱的域名 例如qq.com  
+	            var ix = term.indexOf('@'); //@的位置  
+	            var result = []; //最终呈现的邮箱列表  
+	              
+	            //当用户输入的数据（email）里存在@的时候，就重新给用户名和域名赋值  
+	            if (ix > -1) {  
+	                name = term.slice(0, ix);  
+	                host = term.slice(ix + 1);  
+	            }  
+	            if (name) { 
+	                var getHosts = []; 
+	                getHosts=  host ? ($.grep(hosts, function (val) { return val.indexOf(host) > -1 })) : hosts;   
+	                result = $.map(getHosts, function (val) { 
+	                    return name + "@" + val;  
+	                });                  
+	            }            
+	            //result.unshift(term); 
+	            //unshift方法的作用是：将一个或多个新元素添加到数组开始，数组中的元素自动后移，返回数组新长度  
+
+	            response(result);  
+	        },
+	        response: function (event, ui) {
+	            // var uls = ui.content;
+	            // $.each(uls,function(index,val) {
+	            //   if (!val.flag){
+	            //     val.value = val.label.substring(0,val.label.lastIndexOf("-")-1);
+	            //     val.flag = true;
+	            //   }
+	            // })
+	        }
+	    });
+	</script>
+</body>
+</html>

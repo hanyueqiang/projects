@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>邮箱登录联想</title>
+	<style>
+	  .inputs {
+        position: relative;
+      }
+      #mailBox {
+        background: none repeat scroll 0 0 #ccc;
+        border-color: -moz-use-text-color #ccc #ccc;
+        border-image: none;
+        border-width: 0 1px 1px;
+        left: 0;
+        position: absolute;
+        top: 35px;
+        width: 100%;
+        max-height: 200px;
+        overflow: auto;
+        z-index: 999;
+      }
+      #mailBox ul {
+        padding: 5px 0px 5px 10px;
+        margin:0px;
+        overflow:auto;
+      }
+      #mailBox ul li{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        list-style: none;
+        color:#666;
+        line-height: 1.5em;
+        cursor:pointer;
+      }
+      #mailBox ul li.active{
+        background-color:#22c6d7;
+        border-radius: 4px;
+      }
+      input[type=text] {
+        color:#333;
+      }
+      .hide {
+      	display: none!important;
+      }
+      .inputs {
+      	width:260px;
+      	height:28px;
+      	margin:100px auto;
+      }
+      #username {
+      	height:18px;
+      	width:200px;
+      }
+	</style>
+</head>
+<body>
+	<div class="inputs">
+		<span class="mails">邮箱:</span>
+	    <input class="required"
+	           id="username"
+	           size="25"
+	           tabindex="1"
+	           type="text"
+	           placeholder="请输入用户名"
+	           accesskey="n"
+	           onfocus="placeholder = ''"
+	           autocomplete="off" name="username" value=""/>
+	    <div id="mailBox" class="hide">
+            <ul class="mailList"></ul>
+        </div>
+	</div>
+	
+	<script src="./public/jquery.js"></script>
+	<script>
+		var mail_List = [
+			'@yahoo.com',
+			'@msn.com',
+			'@hotmail.com',
+			'@aol.com',
+			'@ask.com',
+			'@live.com',
+			'@qq.com',
+			'@0355.net',
+			'@163.com',
+			'@163.net',
+			'@263.net',
+			'@3721.net',
+			'@yeah.net',
+			'@googlemail.com',
+			'@mail.com'
+		];
+		var usernametip = "\u8BF7\u8F93\u5165\u7528\u6237\u540D";
+    	$("#username").blur(function(){
+    		$("#username").attr("placeholder", usernametip);
+        	$('#mailBox').addClass('hide');
+    	});
+
+		var lis = $.map(mail_List,function(val) {
+          return '<li>'+val+'</li>';
+        }).join('');
+        $('.mailList').html(lis);
+
+        //onclick li
+        $('.mailList').delegate('li','click',function() {
+          var thisTxt = $(this).text();
+          //var textStr = thisTxt.substring(0,thisTxt.lastIndexOf("-")-1);
+          $('#username').val(thisTxt);
+          $('#username').blur();
+          $('#mailBox').addClass('hide');
+        });
+        //preventDefault input focus
+        $('.mailList').delegate('li','mousedown', false);
+
+        $('.mailList').delegate('li','mouseenter',function(){
+          $(this).addClass('active').siblings().removeClass('active');
+        })
+
+        // $('.mailList').delegate('li','mouseleave',function(){
+        //    $(this).removeClass('active');
+        // })
+        
+        $('#username').keyup(function(e) {
+          if (e.keyCode != 40 && e.keyCode != 38 && e.keyCode != 13) {
+            $('.mailList').html(lis);
+          }
+          
+          var txt = $(this).val();
+          var suffix = "";
+          var val;
+          var contents;
+          if (txt != '' && txt != ' ') {
+            $('#mailBox').removeClass('hide');
+          }else {
+            $('#mailBox').addClass('hide');
+          }
+          if(txt.indexOf("@") >= 0) {
+            suffix = txt.substring(txt.indexOf("@")-1);
+            txt = txt.substring(0,txt.indexOf("@"));
+          }
+          //sync li
+          $('.mailList li').each(function() {
+            val = $(this).text();
+            val = val.substring(val.indexOf("@"));
+            contents = txt + val;
+            $(this).text(contents);
+          })
+          //filter @ after content
+          if (suffix != "") {
+            var reg = new RegExp(suffix,"i");
+            $('.mailList li').each(function() {
+              if(reg.test($(this).text())) {
+                //$(this).css("display",'block');
+              }else {
+                $(this).remove();
+              }
+            })
+            //if not filtered to hide
+            if($('.mailList').height() == 0) {
+              $('#mailBox').addClass('hide');
+            }
+          }
+          if (e.keyCode != 40 && e.keyCode != 38 && e.keyCode != 13) {
+             $('.mailList li').eq(0).addClass('active').nextAll().removeClass('active');
+          }
+         
+          if (e.keyCode == 38) {
+            selectSearch('prev')
+            // 向下键
+          } else if (e.keyCode == 40) {
+            selectSearch('next')
+            // 回车键
+          } else if (e.keyCode == 13) {
+            var thisTxt = $('.active').text();
+            //var textStr = thisTxt.substring(0,thisTxt.lastIndexOf("-")-1);
+            $('#username').val(thisTxt);
+            $('#username').blur();
+            $('#mailBox').addClass('hide');
+
+          }
+        })
+
+        function selectSearch(type){
+          var index;
+          if (type == 'next'){
+            if ($('.mailList li').hasClass('active')) {
+               $('.active').next().addClass('active').siblings().removeClass('active');
+             }else {
+              $('.mailList li').eq(0).addClass('active').siblings().removeClass('active');
+             }
+          }else{
+            $('.active').prev().addClass('active').siblings().removeClass('active');
+          }
+        }
+
+	</script>
+</body>
+</html>
